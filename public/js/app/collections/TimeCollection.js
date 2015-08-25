@@ -4,7 +4,7 @@ define(["jquery", "backbone", "models/TimeModel"],
         var Collection = Backbone.Collection.extend({
             // Tells the Backbone Collection that all of it's models will be of type Model (listed up top as a dependency)
             initialize: function(params){
-                console.log(params);
+                // console.log(params);
                 //TODO использовать _.template
                 this.pouch.options.query.fun.map = "function (doc) {" +
                     "if (doc.type === 'time' && doc.start >= " + params.from + " && doc.start <= " + params.to + ") {" +

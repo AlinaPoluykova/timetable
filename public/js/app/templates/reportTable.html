@@ -7,6 +7,9 @@
                 <th>Отработанное время</th>
                 <th>Обеденное время</th>
                 <th>Опоздания</th>
+                <th>Отработанные дни</th>
+                <th>Сред. время прихода</th>
+                <th>Сред. длительность рабочего дня</th>
             </tr>
             </thead>
             <tbody>
@@ -17,6 +20,9 @@
                 <td><%= data.work %></td>
                 <td><%= data.dinner %></td>
                 <td><%= data.late %></td>
+                <td><%= data.workDays %></td>
+                <td><%= data.middleStartTime %></td>
+                <td><%= data.middleHoursPerDay %></td>
             </tr>
             <% }); %>
 

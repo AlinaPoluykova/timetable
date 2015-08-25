@@ -1,7 +1,7 @@
 define( [ 'App', 'backbone', 'marionette', 'underscore', 'models/EmployeeModel', 'text!templates/employee.html', 'stickit', 'material', 'ripples',
-    'bootstrapTable', 'velocity', "collections/EmployeeCollection"],
+    'bootstrapTable', 'velocity', "collections/EmployeeCollection", 'xeditable'],
     function( App, Backbone, Marionette, _, Model, template, stickit, material, ripples,
-              bootstrapTable, velocity, EmployeeCollection) {
+              bootstrapTable, velocity, EmployeeCollection, xeditable) {
         return Marionette.ItemView.extend( {
 
             template: _.template(template),
@@ -27,6 +27,7 @@ define( [ 'App', 'backbone', 'marionette', 'underscore', 'models/EmployeeModel',
                 createButton: "#createButton",
                 cancelButton: "#cancelButton",
                 table: ".employee-table",
+                // tableTd: "#work-table td",
                 tableContainer: ".table-container"
             },
 
@@ -76,7 +77,10 @@ define( [ 'App', 'backbone', 'marionette', 'underscore', 'models/EmployeeModel',
                         {"field": "phone", "title": "Телефон", width: "30%"}
                     ]
                 });
+
             },
+
+
 
             showEmployees: function(models){
                 var data = [];

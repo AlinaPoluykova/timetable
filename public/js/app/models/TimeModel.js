@@ -4,6 +4,7 @@ define(["jquery", "backbone", "moment"],
         var Model = Backbone.Model.extend({
             initialize:function () {
                 this.set("type", this.defaults.type);
+
             },
 
             defaults:{
@@ -17,6 +18,8 @@ define(["jquery", "backbone", "moment"],
                 photoEnd: undefined,//фотка для конца периода(только для рабочих периодов) в Base64
                 active: undefined,//флаг активности периода
                 late: undefined//если период первый в текущем дне, то сюда пишется информация об опоздании (пока в виде строки "00:23", переделать на минуты)
+
+
             },
 
             validate:function (attrs) {

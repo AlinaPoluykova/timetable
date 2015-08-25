@@ -1,8 +1,22 @@
-define(['App', 'marionette', 'underscore', 'models/TimeModel', 'collections/TimeCollection', 'collections/EmployeeCollection',
-        'text!templates/work.html', 'material', 'ripples',
-        'vis', 'velocity', 'text!templates/group.html', 'text!templates/groupHistory.html', 'webcam', 'moment', 'injectCSS'],
-    function (App, Marionette, _, TimeModel, TimeCollection, EmployeeCollection, template, material, ripples,
-              vis, velocity, groupTemplate, groupHistoryTemplate, webcam, moment, injectCSS) {
+define([
+    'App',
+    'marionette',
+    'underscore',
+    'models/TimeModel',
+    'collections/TimeCollection',
+    'collections/EmployeeCollection',
+    'text!templates/work.html',
+    'material',
+    'ripples',
+    'moment',
+    'vis',
+    'velocity',
+    'text!templates/group.html',
+    'text!templates/groupHistory.html',
+    'webcam',
+    'injectCSS',
+    'eon-timepicker'
+], function (App, Marionette, _, TimeModel, TimeCollection, EmployeeCollection, template, material, ripples, moment, vis, velocity, groupTemplate, groupHistoryTemplate, webcam, injectCSS, eontimepicker) {
         return Marionette.ItemView.extend({
 
             template: _.template(template),
@@ -30,7 +44,8 @@ define(['App', 'marionette', 'underscore', 'models/TimeModel', 'collections/Time
                 webcamName: "#webcamName",
                 webcamTime: "#webcamTime",
 
-                dayInput: "#inputDay"
+                dayInput: "#inputDay",
+                datePickerWork: "#datepicker-work"
             },
 
             initialize: function (params) {
@@ -57,30 +72,31 @@ define(['App', 'marionette', 'underscore', 'models/TimeModel', 'collections/Time
                         to: this.day.endOf('day').unix()
                     }
                 );
+
             },
 
             events: {
                 'click @ui.workButton': 'workButtonClick',
                 'click @ui.breakButton': 'breakButtonClick',
-                'click @ui.cancelButton': 'cancelButtonClick',
-                'keyup @ui.dayInput': 'changeDate'
+                'click @ui.cancelButton': 'cancelButtonClick'
             },
 
             changeDate: function (e) {
-                if (e.keyCode == 13) {
                     var date = moment(this.ui.dayInput.val());
                     if (!date.isValid()) {
                         date = moment();
                         this.ui.dayInput.val(date.format("YYYY-MM-DD"));
+                        // this.ui.dayInput.datetimepicker();
                     }
                     window.location.href = "index.html#work/" + this.ui.dayInput.val();
-                }
             },
 
             onAttach: function () {
+                var that = this;
                 this.loadEmployees();
                 $.material.init();
-                this.ui.dayInput.val(this.day.format("YYYY-MM-DD"));
+                var day = this.ui.dayInput.datetimepicker({format : "YYYY-MM-DD"});
+                this.ui.dayInput.on('dp.change', function (e) { that.changeDate()})
             },
 
             loadEmployees: function () {
@@ -371,11 +387,12 @@ define(['App', 'marionette', 'underscore', 'models/TimeModel', 'collections/Time
                             if (late > 0) {
                                 lateStr = Math.round(late / 60) + ":" + late % 60;
                             }
-                            time.save({"late": lateStr});
+                            time.set("late", lateStr);
                         }
                     }
                 });
                 this.showCameraDialog(params);
+
             },
 
             showBreakNotification: function (employee) {

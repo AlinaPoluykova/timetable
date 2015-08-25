@@ -1,9 +1,13 @@
 @import url("bootstrap.css");
 @import url("material.css");
 @import url("ripples.css");
+@import url("datepicker.css");
 @import url("roboto.css");
 @import url("shadow.css");
 @import url("../js/libs/bootstrap-table/bootstrap-table.min.css");
-@import url("../js/libs/vis/vis.min.css");
+@import url("../js/libs/vis/dist/vis.min.css");
+@import url("bootstrap-datetimepicker.min.css");
+@import url("../js/libs/x-editable/dist/bootstrap-editable/css/bootstrap-editable.css");
+
 
 @import url("style.css");
