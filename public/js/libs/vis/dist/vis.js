@@ -10501,8 +10501,6 @@ return /******/ (function(modules) { // webpackBootstrap
    */
   Graph3d.prototype.setSize = function (width, height) {
 
-    //TODO my edit
-    this.body.emitter.emit('currentTime');
     this.frame.style.width = width;
     this.frame.style.height = height;
 
@@ -20901,6 +20899,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
     this.bar.style.left = x + 'px';
     this.bar.title = title;
+    //TODO my edit
+    this.body.emitter.emit('currentTime');
 
     return false;
   };
