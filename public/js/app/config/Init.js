@@ -16,7 +16,7 @@ require.config({
         marionette: '../libs/backbone.marionette',
         moment: '../libs/momentjs/min/moment.min',
         webcam: '../libs/webcam/webcam.min',
-        vis: '../libs/vis/dist/vis',
+        vis: '../libs/vis/vis',
         pouchdb: '../libs/pouchdb/pouchdb-3.6.0.min',
         backbonePouch: '../libs/pouchdb/backbone-pouch',
         injectCSS: '../libs/injectCSS/jquery.injectCSS',
