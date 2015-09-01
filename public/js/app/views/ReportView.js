@@ -90,22 +90,22 @@ define([
                                 }
                                 var date = new Date(time.get('start') * 1000);
                                 var year = date.getFullYear();
-                                var month = date.getMonth();
+                                var month = date.getMonth() + 1 ;
                                 var day = date.getDate();
                                 date = year.toString() + '-' +  month.toString() + '-' + day.toString();
-                                if (tmp[employeeId].indexOf(date) == -1) {
+                                if (tmp[employeeId].indexOf(date) === -1) {
                                     tmp[employeeId].push(date);
                                 }
                                 
                             }
 
-                            if(time.get("mode") == 'work' && time.has("start")){
+                            if(time.get("mode") === 'work' && time.has("start")){
                                 if(tmp2[employeeId] == null){
                                     tmp2[employeeId] = {};
                                 }
                                 var date = new Date(time.get('start') * 1000);
                                 var year = date.getFullYear();
-                                var month = date.getMonth();
+                                var month = date.getMonth() + 1;
                                 var day = date.getDate();
                                 workDay = year.toString() + '-' +  month.toString() + '-' + day.toString();
                                 if(tmp2[employeeId][workDay] == null) {
@@ -136,6 +136,7 @@ define([
                             }
 
 
+
                         });
 
 
@@ -145,34 +146,50 @@ define([
 
                             // Бегаем по всем дням одного работника и выбираем самое раннее время начала дня, перезаписываем его
                             var employeeDays = tmp2[employeeId];
-                            for(var dayKey in employeeDays){
-                                employeeDays[dayKey] = Math.min.apply(null, employeeDays[dayKey]);
+                            if (employeeDays != null) {
+                                for(var dayKey in employeeDays){
+                                    employeeDays[dayKey] = Math.min.apply(null, employeeDays[dayKey]);
+                                }
                             }
                             
                             // debugger;
                             // Пробегаемся и считаем среднее минимальное за каждый день
                             var allStartHours = 0; 
                             var allStartMinutes = 0; 
-                            for (var startTime in tmp2[employeeId]){
-                                allStartHours += new Date(tmp2[employeeId][startTime] * 1000).getHours();
-                                allStartMinutes += new Date(tmp2[employeeId][startTime] * 1000).getMinutes(); 
+                            if (tmp2[employeeId] != null) {
+                                for (var startTime in tmp2[employeeId]){
+                                    allStartHours += new Date(tmp2[employeeId][startTime] * 1000).getHours();
+                                    allStartMinutes += new Date(tmp2[employeeId][startTime] * 1000).getMinutes(); 
+                                }
                             }
-
-
                             var name = that.employeeCollection.get(employeeId).get("name");
                             var timeWork = pad(Math.floor(info.work / 60 / 60), 2) + ":" + pad(Math.floor(info.work / 60 % 60), 2);
                             var timeBreak = pad(Math.floor(info.dinner / 60 / 60), 2) + ":" + pad(Math.floor(info.dinner / 60 % 60), 2);
-                            var workDays = tmp[employeeId].length;
+                            if (tmp[employeeId] != null) {
+                                var workDays = tmp[employeeId].length;
+                            } else {
+                                var workDays = 0;
+                            }
+                            
 
-                            var middleHoursPerDay = pad(Math.floor(info.work / 60 / 60 / workDays), 2) + ":" +  pad(Math.floor(info.work / 60 % 60 / workDays), 2);
+                            if (workDays > 0) {
+                                var middleHoursPerDay = pad(Math.floor(info.work / 60 / 60 / workDays), 2) + ":" +  pad(Math.floor(info.work / 60 % 60 / workDays), 2);
+                            } else {
+                                var middleHoursPerDay = '00:00';
+                            }
+                            
 
                             // console.log(employeeId , allStartTimes, workDays, allStartTimes / workDays);
                             // debugger;
 
 
-
-                            var middleStartHours = Math.floor(allStartHours / workDays);
-                            var middleStartMinutes = Math.floor(allStartMinutes / workDays);
+                            if (workDays > 0) {
+                                var middleStartHours = Math.floor(allStartHours / workDays);
+                                var middleStartMinutes = Math.floor(allStartMinutes / workDays);
+                            } else {
+                                var middleStartHours = 0;
+                                var middleStartMinutes = 0;
+                            }
                             var middleStartTime = middleStartHours + ':' +  middleStartMinutes;
 
 
@@ -188,8 +205,7 @@ define([
                             });
                         });
                         console.log(data);
-                        console.log(22222);
-                        console.log(tmp2);
+
 
                         that.ui.reportTableContainer.html(_.template(ReportTable)({data: data}));
                     }
