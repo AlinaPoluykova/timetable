@@ -165,8 +165,8 @@ define([
                                 }
                             }
                             var name = that.employeeCollection.get(employeeId).get("name");
-                            var timeWork = pad(Math.floor(info.work / 60 / 60), 2) + ":" + pad(Math.floor(info.work / 60 % 60), 2);
-                            var timeBreak = pad(Math.floor(info.dinner / 60 / 60), 2) + ":" + pad(Math.floor(info.dinner / 60 % 60), 2);
+                            var timeWork = Math.floor(info.work / 60 / 60) + ":" + pad(Math.floor(info.work / 60 % 60), 2);
+                            var timeBreak = Math.floor(info.dinner / 60 / 60) + ":" + pad(Math.floor(info.dinner / 60 % 60), 2);
                             if (tmp[employeeId] != null) {
                                 var workDays = tmp[employeeId].length;
                             } else {
