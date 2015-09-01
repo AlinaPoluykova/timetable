@@ -175,7 +175,7 @@ define([
                             
 
                             if (workDays > 0) {
-                                var middleHoursPerDay = pad(Math.floor(info.work / 60 / 60 / workDays), 2) + ":" +  pad(Math.floor(info.work / 60 % 60 / workDays), 2);
+                                var middleHoursPerDay = pad(Math.round(info.work / 60 / 60 / workDays), 2) + ":" +  pad(Math.round(info.work / 60 % 60 / workDays), 2);
                             } else {
                                 var middleHoursPerDay = '00:00';
                             }
