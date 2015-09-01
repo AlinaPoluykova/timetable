@@ -82,7 +82,9 @@ define([
                         $.each(collection.models, function (index, time) {
                             console.log(index, time);
                             var employeeId = time.get("employeeId");
-
+                            if(!that.info[employeeId]){
+                                return;
+                            }
 
                             if(time.get('mode') === 'work'){
                                 if (tmp[employeeId] == null) {
@@ -126,7 +128,7 @@ define([
                                     that.info[time.get("employeeId")].late++;
                                 }
 
-                            } else if (time.get("mode") === 'break' && time.has("start")){
+                            } else if (time.get("mode") === 'break' && time.has("start")) {
                                 var end = moment().unix();
                                 if (time.has("end")) {
                                     end = time.get("end");
