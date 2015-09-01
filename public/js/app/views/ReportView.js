@@ -160,8 +160,8 @@ define([
                             var allStartMinutes = 0; 
                             if (tmp2[employeeId] != null) {
                                 for (var startTime in tmp2[employeeId]){
-                                    allStartHours += new Date(tmp2[employeeId][startTime] * 1000).getHours();
-                                    allStartMinutes += new Date(tmp2[employeeId][startTime] * 1000).getMinutes(); 
+                                    var minutesFromDayStart = new Date(tmp2[employeeId][startTime] * 1000).getHours() * 60 + new Date(tmp2[employeeId][startTime] * 1000).getMinutes();
+                                    allStartMinutes += minutesFromDayStart;
                                 }
                             }
                             var name = that.employeeCollection.get(employeeId).get("name");
@@ -186,8 +186,9 @@ define([
 
 
                             if (workDays > 0) {
-                                var middleStartHours = Math.floor(allStartHours / workDays);
                                 var middleStartMinutes = Math.floor(allStartMinutes / workDays);
+                                var middleStartHours = Math.floor(middleStartMinutes / 60);
+                                middleStartMinutes = Math.floor(middleStartMinutes % 60);
                             } else {
                                 var middleStartHours = 0;
                                 var middleStartMinutes = 0;
