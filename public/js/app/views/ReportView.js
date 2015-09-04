@@ -35,7 +35,7 @@ define([
             },
 
             events: {
-                'click @ui.reportButton': 'reportButtonClick',
+                'click @ui.reportButton': 'reportButtonClick'
             },
 
             onAttach: function () {
@@ -58,159 +58,94 @@ define([
                     }
                 );
 
-                //TODO вынести в отдельный хелпер
-                function pad(num, size) {
-                    return ('000000000' + num).substr(-size);
-                }
                 this.timeCollection.fetch({
                     success: function(collection){
 
+                        //для каждого сотрудника создаём структуру данных для отчёта
                         $.each(that.employeeCollection.models, function(index, employee){
-                            
-                            console.log(index, employee);
                             that.info[employee.get("_id")] = {
-                                work: 0,
-                                dinner: 0,
-                                late: 0
-
+                                lateDays: [], //дни
+                                workingDays: [], //строки с днями
+                                startTimes: [],//секунды с начала дня
+                                workingLengths: [],//секунды
+                                dinnerLengths: []//секунды
                             };
                         });
-                       
-                        var tmp = {};
-                        var tmp2 = {};
 
-                        $.each(collection.models, function (index, time) {
-                            console.log(index, time);
-                            var employeeId = time.get("employeeId");
-                            if(!that.info[employeeId]){
-                                return;
-                            }
-
-                            if(time.get('mode') === 'work'){
-                                if (tmp[employeeId] == null) {
-                                    tmp[employeeId] = []
-                                }
-                                var date = new Date(time.get('start') * 1000);
-                                var year = date.getFullYear();
-                                var month = date.getMonth() + 1 ;
-                                var day = date.getDate();
-                                date = year.toString() + '-' +  month.toString() + '-' + day.toString();
-                                if (tmp[employeeId].indexOf(date) === -1) {
-                                    tmp[employeeId].push(date);
-                                }
-                                
-                            }
-
-                            if(time.get("mode") === 'work' && time.has("start")){
-                                if(tmp2[employeeId] == null){
-                                    tmp2[employeeId] = {};
-                                }
-                                var date = new Date(time.get('start') * 1000);
-                                var year = date.getFullYear();
-                                var month = date.getMonth() + 1;
-                                var day = date.getDate();
-                                workDay = year.toString() + '-' +  month.toString() + '-' + day.toString();
-                                if(tmp2[employeeId][workDay] == null) {
-                                    tmp2[employeeId][workDay] = [];
-                                }
-                                tmp2[employeeId][workDay].push(time.get('start'));
-                            }
-
-
-                            if (time.get("mode") === 'work' && time.has("start")) {
-                                var end = moment().unix();
-                                if (time.has("end")) {
-                                   end = time.get("end");
-                                }
-                                var period = end - time.get("start");
-                                that.info[time.get("employeeId")].work += period;
-                                if (time.has("late")) {
-                                    that.info[time.get("employeeId")].late++;
-                                }
-
-                            } else if (time.get("mode") === 'break' && time.has("start")) {
-                                var end = moment().unix();
-                                if (time.has("end")) {
-                                    end = time.get("end");
-                                }
-                                var period = end - time.get("start");
-                                that.info[time.get("employeeId")].dinner += period;
-                            }
-
-
-
+                        var info = collection.models.map(function(data, index){
+                            var info = {};
+                            info["day"] = moment.unix(data.get("start")).startOf("day").format("DD.MM.YYYY");
+                            info["employeeId"] = data.get("employeeId");
+                            info["mode"] = data.get("mode");
+                            info["late"] = data.get("late");
+                            info["length"] = data.get("end") - data.get("start");
+                            info["startFromBeginning"] = data.get("start") - moment.unix(data.get("start")).startOf("day").unix();
+                            info["key"] = info["employeeId"] + "-" + info["day"] + "-" + info["mode"];
+                            return info;
                         });
 
+                        var groupedInfo = _.groupBy(info, "key");
+                        var arr = _.values(groupedInfo).map(function(data, index){
+                            var result = data[0];
+                            if(data.length > 1){
+                               $.each(data, function(index, elem){
+                                   if(elem["startFromBeginning"] < result["startFromBeginning"]){
+                                       result["startFromBeginning"] = elem["startFromBeginning"];
+                                   }
+                                   result["length"] += elem["length"];
+                               });
+                            }
+                            return result
+                        });
+
+                        $.each(arr, function(index, elem){
+                            if(!that.info[elem.employeeId])return;
+                            if(elem.mode == "work"){
+                                that.info[elem.employeeId].workingDays.push(elem.day);
+                                that.info[elem.employeeId].startTimes.push(elem.startFromBeginning);
+                                that.info[elem.employeeId].workingLengths.push(elem.length);
+                            } else {
+                                that.info[elem.employeeId].dinnerLengths.push(elem.length);
+                            }
+                            if(elem.late){
+                                that.info[elem.employeeId].lateDays.push(elem.day);
+                            }
+                        });
 
                         var data = [];
 
-                        $.each(that.info, function(employeeId, info){
 
-                            // Бегаем по всем дням одного работника и выбираем самое раннее время начала дня, перезаписываем его
-                            var employeeDays = tmp2[employeeId];
-                            if (employeeDays != null) {
-                                for(var dayKey in employeeDays){
-                                    employeeDays[dayKey] = Math.min.apply(null, employeeDays[dayKey]);
-                                }
-                            }
-                            
-                            // debugger;
-                            // Пробегаемся и считаем среднее минимальное за каждый день
-                            var allStartHours = 0; 
-                            var allStartMinutes = 0; 
-                            if (tmp2[employeeId] != null) {
-                                for (var startTime in tmp2[employeeId]){
-                                    var minutesFromDayStart = new Date(tmp2[employeeId][startTime] * 1000).getHours() * 60 + new Date(tmp2[employeeId][startTime] * 1000).getMinutes();
-                                    allStartMinutes += minutesFromDayStart;
-                                }
-                            }
-                            var name = that.employeeCollection.get(employeeId).get("name");
-                            var timeWork = Math.floor(info.work / 60 / 60) + ":" + pad(Math.floor(info.work / 60 % 60), 2);
-                            var timeBreak = Math.floor(info.dinner / 60 / 60) + ":" + pad(Math.floor(info.dinner / 60 % 60), 2);
-                            if (tmp[employeeId] != null) {
-                                var workDays = tmp[employeeId].length;
-                            } else {
-                                var workDays = 0;
-                            }
-                            
+                        function sum(arr){
+                            return _.reduce(arr, function(sum, el) {
+                                return sum + el
+                            }, 0);
+                        }
 
-                            if (workDays > 0) {
-                                var middleHoursPerDay = pad(Math.round(info.work / 60 / 60 / workDays), 2) + ":" +  pad(Math.round(info.work / 60 % 60 / workDays), 2);
-                            } else {
-                                var middleHoursPerDay = '00:00';
-                            }
-                            
+                        function average(arr){
+                            return _.reduce(arr, function(memo, num) {
+                                    return memo + num;
+                                }, 0) / (arr.length === 0 ? 1 : arr.length);
+                        }
 
-                            // console.log(employeeId , allStartTimes, workDays, allStartTimes / workDays);
-                            // debugger;
+                        function sec2time(sec){
+                            return moment().startOf("day").add(sec,"seconds").format("HH:mm");
+                        }
 
-
-                            if (workDays > 0) {
-                                var middleStartMinutes = Math.floor(allStartMinutes / workDays);
-                                var middleStartHours = Math.floor(middleStartMinutes / 60);
-                                middleStartMinutes = Math.floor(middleStartMinutes % 60);
-                            } else {
-                                var middleStartHours = 0;
-                                var middleStartMinutes = 0;
-                            }
-                            var middleStartTime = middleStartHours + ':' +  middleStartMinutes;
-
-
+                        for (property in that.info) {
                             data.push({
-                                name:name,
-                                work: timeWork,
-                                dinner: timeBreak,
-                                late: info.late,
-                                workDays: workDays,
-                                middleHoursPerDay: middleHoursPerDay,
-                                middleStartTime: middleStartTime
-
+                                name: property,
+                                work: (sum(that.info[property]["workingLengths"])/3600).toFixed(2),
+                                dinner: (sum(that.info[property]["dinnerLengths"])/3600).toFixed(2),
+                                late: that.info[property]["lateDays"].length,
+                                workDays: that.info[property]["workingDays"].length,
+                                middleStartTime: sec2time(average(that.info[property]["startTimes"])),
+                                middleHoursPerDay: (average(that.info[property]["workingLengths"])/3600).toFixed(2)
                             });
-                        });
-                        console.log(data);
 
+                        }
 
                         that.ui.reportTableContainer.html(_.template(ReportTable)({data: data}));
+
                     }
                 })
 
