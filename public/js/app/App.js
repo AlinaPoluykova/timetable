@@ -13,10 +13,10 @@ define(['jquery', 'backbone', 'marionette', 'underscore', 'bootstrap', 'pouchdb'
         });
 
         //путь к базе CouchDB
-        //App.db = new PouchDB('http://localhost:5984/timetable');
+        App.db = new PouchDB('http://localhost:5984/timetable');
 
         //путь к реальной базе CouchDB
-        App.db = new PouchDB('http://192.168.10.40:5984/timetable');
+        //App.db = new PouchDB('http://192.168.10.40:5984/timetable');
 
         Backbone.sync = BackbonePouch.sync({
             db: App.db

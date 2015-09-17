@@ -74,6 +74,12 @@ define([
                 }
             );
 
+            this.historyCollection = new TimeCollection({
+                    from: moment().subtract(1, 'day').startOf('day').unix(),
+                    to: moment().startOf('day').unix()
+                }
+            );
+
         },
 
         events: {
@@ -97,7 +103,7 @@ define([
             var that = this;
             this.loadEmployees();
             $.material.init();
-            this.ui.dayInput.val(moment().format("YYYY-MM-DD"));
+            this.ui.dayInput.val(this.day.format("YYYY-MM-DD"));
             var day = this.ui.dayInput.datetimepicker({format: "YYYY-MM-DD"});
             this.ui.dayInput.on('dp.change', function (e) {
                 that.changeDate()
@@ -224,6 +230,7 @@ define([
                     }
                 }
             });
+            this.historyCollection.fetch();
         },
 
         startNotificationChecker: function (interval) {
@@ -363,8 +370,22 @@ define([
             return !result;
         },
 
+        isFaultEmployee: function(employee) {
+            var result = false;
+            $.each(this.historyCollection.models, function (index, time) {
+                if (time.get('employeeId') == employee.get("_id") && time.get("mode") == "work" && time.has('fault')) {
+                    result = time.get('fault');
+                }
+            });
+            return result;
+        },
+
         startWork: function (employee) {
             var isFirst = this.isFirstStartForEmployee(employee);
+            var isFault = this.isFaultEmployee(employee);
+            if(isFault){
+                $(".well.bs-component").removeClass("fault").addClass("fault");
+            }
 
             var time = new TimeModel({
                 employeeId: employee.get("_id"),

@@ -59,6 +59,12 @@
     z-index: 9999;
 }
 
+.well.bs-component.fault {
+    background-image: url("../img/fault_bg.png");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+}
+
 .vis-item.vis-background.work {
     background-color: darkseagreen;
 }
