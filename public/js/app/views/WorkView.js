@@ -595,7 +595,7 @@ define([
             var time_id = time.get("_id");
             var data_uri = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAMAAAAOusbgAAAAA1BMVEX/4wBssakYAAAAJUlEQVRo3u3BMQEAAADCoPVPbQlPoAAAAAAAAAAAAAAAAAAAPgY4uAABqfMnWwAAAABJRU5ErkJggg==);"
             var injection = {};
-            time.save({"end": time.get("end"), "photoEnd": data_uri});
+            time.save({"end": time.get("end"), "photoEnd": data_uri, "fault": true});
             var currentBg = $(".vis-item.vis-background.work.id" + time_id).css('background-image');
             injection[".vis-item.vis-background.work.id" + time_id] = {
                 "background-image": currentBg + ', url(' + data_uri + ')'
