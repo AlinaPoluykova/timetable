@@ -97,6 +97,7 @@ define([
             var that = this;
             this.loadEmployees();
             $.material.init();
+            this.ui.dayInput.val(moment().format("YYYY-MM-DD"));
             var day = this.ui.dayInput.datetimepicker({format: "YYYY-MM-DD"});
             this.ui.dayInput.on('dp.change', function (e) {
                 that.changeDate()
