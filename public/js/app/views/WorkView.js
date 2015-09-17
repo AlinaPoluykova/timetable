@@ -383,7 +383,6 @@ define([
         startWork: function (employee) {
             var isFirst = this.isFirstStartForEmployee(employee);
             var isFault = this.isFaultEmployee(employee);
-            debugger;
             if(isFault){
                 $("#monkey")[0].play();
                 $(".well.bs-component").removeClass("fault").addClass("fault");
