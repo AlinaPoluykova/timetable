@@ -40,7 +40,7 @@ define([
 
             onAttach: function () {
                 $.material.init();
-                this.ui.inputFrom.val(moment().startOf('month').format("YYYY-MM-DD"));
+                this.ui.inputFrom.val(moment().subtract(1, 'day').startOf('month').format("YYYY-MM-DD"));
                 this.ui.inputTo.val(moment().subtract(1, 'day').format("YYYY-MM-DD"));
                 this.ui.inputFrom.datetimepicker({format : "YYYY-MM-DD"});
                 this.ui.inputTo.datetimepicker({format : "YYYY-MM-DD"});
