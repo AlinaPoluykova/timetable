@@ -114,3 +114,15 @@
     top: 22px;
     color: #f55549;
 }
+
+.faultStyle {
+    background: url("../img/banana_grey.png") no-repeat center;
+    width: 28px;
+    height: 28px;
+}
+
+.faultStyle:hover {
+    background: url("../img/banana.png") no-repeat center;
+    width: 28px;
+    height: 28px;
+}

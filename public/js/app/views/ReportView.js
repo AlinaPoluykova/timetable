@@ -42,8 +42,8 @@ define([
                 $.material.init();
                 // this.ui.inputFrom.val(moment().format("YYYY-MM-DD"));
                 // this.ui.inputTo.val(moment().format("YYYY-MM-DD"));
-                this.ui.inputFrom.datetimepicker();
-                this.ui.inputTo.datetimepicker();
+                this.ui.inputFrom.datetimepicker({format : "YYYY-MM-DD"});
+                this.ui.inputTo.datetimepicker({format : "YYYY-MM-DD"});
             },
 
             reportButtonClick: function(){
