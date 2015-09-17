@@ -40,8 +40,8 @@ define([
 
             onAttach: function () {
                 $.material.init();
-                // this.ui.inputFrom.val(moment().format("YYYY-MM-DD"));
-                // this.ui.inputTo.val(moment().format("YYYY-MM-DD"));
+                this.ui.inputFrom.val(moment().startOf('month').format("YYYY-MM-DD"));
+                this.ui.inputTo.val(moment().subtract(1, 'day').format("YYYY-MM-DD"));
                 this.ui.inputFrom.datetimepicker({format : "YYYY-MM-DD"});
                 this.ui.inputTo.datetimepicker({format : "YYYY-MM-DD"});
             },
@@ -51,6 +51,11 @@ define([
                 var that = this;
                 var timeFrom = moment(this.ui.inputFrom.val()).startOf('day');
                 var timeTo = moment(this.ui.inputTo.val()).endOf('day');
+
+                if(timeTo > moment().startOf('day')){
+                    timeTo = moment().subtract(1, 'day').endOf('day');
+                    this.ui.inputTo.val(timeTo.format("YYYY-MM-DD"));
+                }
 
                 this.timeCollection = new TimeCollection({
                         from: timeFrom.unix(),
