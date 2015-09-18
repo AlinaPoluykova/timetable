@@ -68,18 +68,18 @@ define([
                 this.isHistory = false;
             }
 
-            this.timeCollection = new TimeCollection({
+            var yesterday = moment().subtract(1, 'day');
+            this.historyCollection = new TimeCollection([],{
+                    from: yesterday.startOf('day').unix(),
+                    to: yesterday.endOf('day').unix()
+                }
+            );
+
+            this.timeCollection = new TimeCollection([],{
                     from: this.day.startOf('day').unix(),
                     to: this.day.endOf('day').unix()
                 }
             );
-
-            this.historyCollection = new TimeCollection({
-                    from: moment().subtract(1, 'day').startOf('day').unix(),
-                    to: moment().startOf('day').unix()
-                }
-            );
-
         },
 
         events: {
@@ -117,11 +117,16 @@ define([
                     //если отображаем текущий день
                     if (!that.isHistory) {
                         that.createEmployeeGroups(collection.models);
+                        that.historyCollection.fetch({
+                            success: function(collection){
+                                that.createItems();
+                            }
+                        });
                         //если отображаем день из истории
                     } else {
                         that.createEmployeeHistoryGroups(collection.models);
+                        that.createItems();
                     }
-                    that.createItems();
                 }
             });
         },
@@ -230,7 +235,6 @@ define([
                     }
                 }
             });
-            this.historyCollection.fetch();
         },
 
         startNotificationChecker: function (interval) {

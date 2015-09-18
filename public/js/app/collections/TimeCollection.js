@@ -3,18 +3,27 @@ define(["jquery", "backbone", "models/TimeModel"],
         // Creates a new Backbone Collection class object
         var Collection = Backbone.Collection.extend({
             // Tells the Backbone Collection that all of it's models will be of type Model (listed up top as a dependency)
-            initialize: function(params){
+            initialize: function (models, params) {
+                this.from = params.from;
+                this.to = params.to;
                 // console.log(params);
                 //TODO использовать _.template
-                this.pouch.options.query.fun.map = "function (doc) {" +
-                    "if (doc.type === 'time' && doc.start >= " + params.from + " && doc.start <= " + params.to + ") {" +
-                        "emit(doc)" +
-                    "}" +
-                "}";
             },
-            from: undefined,
-            to: undefined,
+
+            fetch: function(options) {
+                //do specific pre-processing
+                this.pouch.options.query.fun.map = "function (doc) {" +
+                    "if (doc.type === 'time' && doc.start >= " + this.from + " && doc.start <= " + this.to + ") {" +
+                    "emit(doc)" +
+                    "}" +
+                    "}";
+
+                //Call Backbone's fetch
+                return Backbone.Collection.prototype.fetch.call(this, options);
+            },
+
             model: Model,
+
             pouch: {
                 listen: false,
                 fetch: 'query',
@@ -37,17 +46,19 @@ define(["jquery", "backbone", "models/TimeModel"],
                     }
                 }
             },
+
             parse: function (result) {
                 return _.pluck(result.rows, 'doc');
             },
-            getLast: function(attr, value){
+
+            getLast: function (attr, value) {
                 var last = undefined;
-                $.each(this.models, function(index, model){
-                    if(model.get(attr) == value){
-                        if(!last){
+                $.each(this.models, function (index, model) {
+                    if (model.get(attr) == value) {
+                        if (!last) {
                             last = model;
                         } else {
-                            if(model.get("start") > last.get("start")){
+                            if (model.get("start") > last.get("start")) {
                                 last = model;
                             }
                         }
