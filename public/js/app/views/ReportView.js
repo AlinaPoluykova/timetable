@@ -57,7 +57,7 @@ define([
                     this.ui.inputTo.val(timeTo.format("YYYY-MM-DD"));
                 }
 
-                this.timeCollection = new TimeCollection({
+                this.timeCollection = new TimeCollection([],{
                         from: timeFrom.unix(),
                         to: timeTo.unix()
                     }
